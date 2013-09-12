@@ -6,18 +6,7 @@ use Moo;
 
 extends 'MooseFS';
 
-has info => (
-    is => 'ro',
-    lazy => 1,
-    builder => '_get_info',
-);
-
-has version => (
-    is => 'ro',
-    default => sub { shift->info->{version} }
-);
-
-sub _get_info {
+sub BUILD {
     my $self = shift;
     my $s = $self->sock;
     print $s pack('(LL)>', 510, 0); 
@@ -26,7 +15,7 @@ sub _get_info {
     my $data = $self->myrecv($s, $length);
     my ($v1, $v2, $v3, $memusage, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack('(SCCQQQQLQLLLLLLL)>', $data); 
     close($s);
-    return {
+    $self->info({
         version => "$v1.$v2.$v3",
         total_space => $total,
         avail_space => $avail,
@@ -41,6 +30,9 @@ sub _get_info {
         all_chunk_copies => $allcopies,
         regular_chunk_copies => $tdcopies,
         memusage => $memusage,
+    });
+    for my $key ( keys %{ $self->info } ) {
+        has $key => (is => 'ro', lazy => 1, default => sub {$self->info->{$key}} );
     };
 };
 

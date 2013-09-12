@@ -11,19 +11,18 @@ has count => (
     default => sub { 0 }
 );
 
-has server_info => (
-    is => 'ro',
-    builder => '_get_server_info'
+has list => (
+    is => 'rw',
+    default => sub { [] }
 );
 
-sub _get_server_info {
+has info => (
+    is => 'rw',
+    default => sub { {} }
+);
+
+sub BUILD {
     my $self = shift;
-    my $inforef;
-#    my $s = IO::Socket::INET->new(
-#        PeerAddr => $self->masterhost,
-#        PeerPort => $self->masterport,
-#        Proto    => 'tcp',
-#    );  
     my $s = $self->sock;
     print $s pack('(LL)>', 500, 0);
     my $header = $self->myrecv($s, 8);
@@ -37,7 +36,9 @@ sub _get_server_info {
             my ($v1, $v2, $v3, $ip1, $ip2, $ip3, $ip4, $port, $used, $total, $chunks, $tdused, $tdtotal, $tdchunks, $errcnt) = unpack('(SCCCCCCSQQLQQLL)>', $d);
             my $percent = $total > 0 ? ($used * 100)/$total : '';
             my $tdpercent = $tdtotal > 0 ? ($tdused * 100)/$tdtotal : '';
-            $inforef->{"$ip1.$ip2.$ip3.$ip4"} = {
+            my $ip = "$ip1.$ip2.$ip3.$ip4";
+            push @{$self->list}, $ip;
+            $self->info->{$ip} = {
                  version => "$v1.$v2.$v3",
                  port => $port,
                  used => $used,
@@ -52,7 +53,6 @@ sub _get_server_info {
             };
         }
     }
-    return $inforef;
 }
 
 1;

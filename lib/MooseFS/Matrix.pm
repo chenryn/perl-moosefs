@@ -6,7 +6,12 @@ use Moo;
 
 extends 'MooseFS';
 
-sub _get_matrix {
+has info => (
+    is => 'rw',
+    default => sub { [] }
+);
+ 
+sub BUILD {
     my $self = shift;
     my $s = $self->sock;
     print $s pack('(LL)>', 510, 0);
@@ -23,15 +28,23 @@ sub _get_matrix {
         die 'Too old version';
     };
     my $nheader = $self->myrecv($s, 8);
-    my $info = [];
     my ($ncmd, $nlength) = unpack('(LL)>', $nheader);
     if ($ncmd == 517 and $nlength == 484) {
         for my $i ( 0 .. 10 ) {
             my $ndata = $self->myrecv($s, 44);
-            push @$info, [ unpack("(LLLLLLLLLLL)>", $ndata) ];
+            push @{ $self->info }, [ unpack("(LLLLLLLLLLL)>", $ndata) ];
         };
     };
-    return $info;
+    for  my $goal ( 0 .. $#{ $self->info } ) {
+        has "goal$goal" => (is => 'ro', lazy => 1, default => sub {
+             my $self = shift;
+             my $info;
+             for my $valid ( 0 .. $#{ $self->info->[$goal] } ) {
+                 $info->{"valid$valid"} = $self->info->[$goal]->[$valid];
+             };
+             return $info;
+        });
+    };
 };
 
 1;

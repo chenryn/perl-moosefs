@@ -1,4 +1,3 @@
-#!perl -T
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -10,10 +9,14 @@ BEGIN {
     use_ok( 'MooseFS::Server' ) || print "Bail out!\n";
 }
 
-my $mfs = MooseFS::Server->new(
-    masterhost => '10.5.16.155',
-);
-
-print Dumper $mfs->server_info;
+SKIP: {
+    skip "no master ip", 3 unless $ENV{masterhost};
+    my $mfs = MooseFS::Server->new(
+        masterhost => $ENV{masterhost},
+    );
+    isa_ok $mfs->info, 'HASH';
+    isa_ok $mfs->list, 'ARRAY';
+    like $mfs->count, qr/^\d+$/;
+};
 
 done_testing;

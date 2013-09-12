@@ -8,7 +8,7 @@ use IO::Socket::INET;
 
 =head1 NAME
 
-MooseFS - The great new MooseFS!
+MooseFS - The MooseFS Info API!
 
 =head1 VERSION
 
@@ -21,13 +21,16 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+The large portions of the code in my library have been taken directly from the Web UI that ships with MooseFS. 
 
-Perhaps a little code snippet.
+Just use different objects to get different informations of the MooseFS cluster.
 
-    use MooseFS;
-
-    my $foo = MooseFS->new();
+    use MooseFS::Server;
+    my $mfs = MooseFS::Server->new(
+        masterhost => '127.0.0.1'
+    );
+    say Dumper $mfs->info;
+    say for $mfs->list;
     ...
 
 =cut
@@ -46,6 +49,10 @@ has sock => (
     is => 'rw',
     lazy => 1,
     builder => '_create_sock',
+);
+
+has info => (
+    is => 'rw',
 );
 
 sub _create_sock {
@@ -69,6 +76,18 @@ sub myrecv {
     return $msg;
 };
 
+=head1 SEE ALSO
+
+=over 4
+ 
+=item L<http://www.moosefs.org>
+
+=item L<https://github.com/techhat/python-moosefs>
+
+=item L<https://github.com/chenryn/perl-moosefs>
+
+=back
+
 =head1 AUTHOR
 
 chenryn, C<< <rao.chenlin at gmail.com> >>
@@ -87,29 +106,6 @@ automatically be notified of progress on your bug as I make changes.
 You can find documentation for this module with the perldoc command.
 
     perldoc MooseFS
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseFS>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/MooseFS>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/MooseFS>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/MooseFS/>
-
-=back
 
 
 =head1 ACKNOWLEDGEMENTS

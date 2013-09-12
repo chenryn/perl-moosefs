@@ -1,4 +1,3 @@
-#!perl -T
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -10,9 +9,16 @@ BEGIN {
     use_ok( 'MooseFS::Matrix' ) || print "Bail out!\n";
 }
 
-my $mfs = MooseFS::Matrix->new(
-    masterhost => '10.5.16.155'
-);
-print Dumper $mfs->_get_matrix;
+
+SKIP: {
+    skip "no master ip", 4 unless $ENV{masterhost};
+    my $mfs = MooseFS::Matrix->new(
+        masterhost => $ENV{masterhost},
+    );
+    isa_ok $mfs->info, 'ARRAY';
+    is $#{$mfs->info}, 10, 'matrix has 11 rows';
+    isa_ok $mfs->goal2, 'HASH';
+    like $mfs->goal2->{valid2}, qr/^\d+$/;
+};
 
 done_testing;

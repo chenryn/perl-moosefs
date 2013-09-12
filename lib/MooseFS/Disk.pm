@@ -16,17 +16,11 @@ has HDperiod => (
     default => sub { 'min' }
 );
 
-has disk_info => (
-    is => 'ro',
-    lazy => 1,
-    builder => '_get_disk_info'
-);
-
-sub _get_disk_info {
+sub BUILD {
     my $self = shift;
     my $inforef;
-    for my $ip ( keys %{ $self->server_info } ) {
-        my $port = $self->server_info->{$ip}->{port};
+    for my $ip ( keys %{ $self->info } ) {
+        my $port = $self->info->{$ip}->{port};
         my $ns = IO::Socket::INET->new(
             PeerAddr => $ip,
             PeerPort => $port,
@@ -119,7 +113,7 @@ sub _get_disk_info {
                 my $rbw = $usecreadsum > 0 ? $rbytes * 1000000 / $usecreadsum : 0;
                 my $wbw = $usecwritesum + $usecfsyncsum > 0 ? $wbytes *1000000 / ($usecwritesum + $usecfsyncsum) : 0;
             
-                $inforef->{$ip} = {
+                $self->info->{$ip} = {
                     ip_path => $ip_path,
                     flags => $flags,
                     errchunkid => $errchunkid,
@@ -148,7 +142,6 @@ sub _get_disk_info {
             };
         }
     }
-    return $inforef;
 }
 
 1;

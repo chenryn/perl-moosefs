@@ -6,7 +6,7 @@ use Moo;
 
 extends 'MooseFS';
 
-sub check_info {
+sub BUILD {
     my $self = shift;
     my $s = $self->sock;
     print $s pack('(LL)>', 512, 0);
@@ -29,7 +29,7 @@ sub check_info {
         } else {
             $messages = 'no data';
         };
-        return {
+        $self->info({
             check_loop_start_time => $loopstart,
             check_loop_end_time => $loopend,
             files => $files,
@@ -41,8 +41,11 @@ sub check_info {
             msgbuffleng => $msgbuffleng,
             important_messages => $messages,
             truncated => $truncated,
-        };
+        });
     }
+    for my $key ( keys %{ $self->info } ) {
+        has $key => (is => 'ro', lazy => 1, default => sub {$self->info->{$key}} );
+    };
 }
 
 1;
