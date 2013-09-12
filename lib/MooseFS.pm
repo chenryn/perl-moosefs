@@ -42,6 +42,21 @@ has masterport => (
     default => sub { 9421 }
 );
 
+has sock => (
+    is => 'rw',
+    lazy => 1,
+    builder => '_create_sock',
+);
+
+sub _create_sock {
+    my $self = shift;
+    IO::Socket::INET->new(
+        PeerAddr => $self->masterhost,
+        PeerPort => $self->masterport,
+        Proto    => 'tcp',
+    );
+};
+
 sub myrecv {
     my ($self, $socket, $len) = @_;
     my $msg = '';

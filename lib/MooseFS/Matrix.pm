@@ -8,11 +8,7 @@ extends 'MooseFS';
 
 sub _get_matrix {
     my $self = shift;
-    my $s = IO::Socket::INET->new(
-        PeerAddr => $self->masterhost,
-        PeerPort => $self->masterport,
-        Proto    => 'tcp',
-    );
+    my $s = $self->sock;
     print $s pack('(LL)>', 510, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);

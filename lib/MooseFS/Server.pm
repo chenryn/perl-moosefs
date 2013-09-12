@@ -13,17 +13,18 @@ has count => (
 
 has server_info => (
     is => 'ro',
-    builder => '_get_info'
+    builder => '_get_server_info'
 );
 
-sub _get_info {
+sub _get_server_info {
     my $self = shift;
     my $inforef;
-    my $s = IO::Socket::INET->new(
-        PeerAddr => $self->masterhost,
-        PeerPort => $self->masterport,
-        Proto    => 'tcp',
-    );
+#    my $s = IO::Socket::INET->new(
+#        PeerAddr => $self->masterhost,
+#        PeerPort => $self->masterport,
+#        Proto    => 'tcp',
+#    );  
+    my $s = $self->sock;
     print $s pack('(LL)>', 500, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
