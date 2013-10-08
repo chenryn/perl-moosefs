@@ -3,6 +3,8 @@ use strict;
 use warnings FATAL => 'all';
 use ExtUtils::MakeMaker;
 
+my( $mm ) = $ExtUtils::MakeMaker::VERSION =~ /^([^_]+)/;
+
 WriteMakefile(
     NAME             => 'MooseFS',
     AUTHOR           => q{chenryn <rao.chenlin@gmail.com>},
@@ -23,4 +25,14 @@ WriteMakefile(
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'MooseFS-*' },
+    ( $mm < 6.46
+        ? ()
+        : ( META_MERGE => {
+                resources => {
+                    repository => 'https://github.com/chenryn/perl-moosefs',
+                },
+                no_index => {directory => [qw/t/]},
+            },
+        )
+    ),
 );
