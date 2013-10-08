@@ -141,6 +141,7 @@ sub BUILD {
                 };
             };
         }
+        close($ns);
     }
 }
 

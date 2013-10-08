@@ -45,7 +45,6 @@ sub BUILD {
     } elsif ($cmd == 511 and $length == 68) {
         my $data = $self->myrecv($s, $length);
         my ($v1, $v2, $v3, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack("(SCCQQQLQLLLLLLL)>", $data);
-        close($s);
         $self->info({
             version => "$v1.$v2.$v3",
             total_space => $total,
@@ -64,7 +63,6 @@ sub BUILD {
     } elsif ($cmd == 511 and $length == 76) {
         my $data = $self->myrecv($s, $length);
         my ($v1, $v2, $v3, $memusage, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack('(SCCQQQQLQLLLLLLL)>', $data); 
-        close($s);
         $self->info({
             version => "$v1.$v2.$v3",
             total_space => $total,

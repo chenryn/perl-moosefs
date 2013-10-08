@@ -15,6 +15,7 @@ SKIP: {
         masterhost => $ENV{masterhost},
     );
     isa_ok $mfs->info, 'HASH';
+    ok $mfs->masterversion > 1400, 'inherit from Moose.pm';
     like $mfs->version, qr/^1\.\d\.\d+$/;
     like $mfs->total_space, qr/^\d+$/;
 };

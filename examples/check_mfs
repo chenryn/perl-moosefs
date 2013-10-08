@@ -1,8 +1,6 @@
-#!perl
-use Data::Dumper;
+#!/usr/bin/perl
 use warnings;
 use strict;
-use lib '../lib';
 use Nagios::Plugin;
 use MooseFS::Info;
 
@@ -43,7 +41,7 @@ $np->add_arg(
         default => 9421,
         help    => <<END_HELP,
 -p, --port
-Gmond Port (defaults to 8649)
+MooseFS Master Port (defaults to 9421)
 END_HELP
 );
 
@@ -64,7 +62,6 @@ my $mfs = MooseFS::Info->new(
 $np->nagios_die("mfs have no space at all") unless $mfs->total_space > 0;
 
 my $percent = 100 - $mfs->avail_space *100.0 / $mfs->total_space;
-print Dumper $mfs->info;
 
 $np->add_perfdata(
     label  => 'avail_percent',
