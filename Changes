@@ -1,7 +1,9 @@
-Revision history for MooseFS
+Revision history for Perl module MooseFS
 
-0.03    Exports/Mounts/Operations
+0.03 2013-10-08
+ - Exports/Mounts/Operations
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.02 2013-09-12
 
+0.01 2013-09-12
+ - First version, released on an unsuspecting world.
