@@ -2,6 +2,7 @@ package MooseFS::Server;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -24,10 +25,10 @@ has info => (
 sub BUILD {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 500, 0);
+    print $s pack('(LL)>', CLTOMA_CSERV_LIST, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ( $cmd == 501 and $length % 54 == 0 ) {
+    if ( $cmd == MATOCL_CSERV_LIST and $length % 54 == 0 ) {
         my $data = $self->myrecv($s, $length);
         my $count = $length / 54;
         $self->count($count);

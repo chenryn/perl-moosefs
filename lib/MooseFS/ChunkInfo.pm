@@ -2,6 +2,7 @@ package MooseFS::ChunkInfo;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -9,10 +10,10 @@ extends 'MooseFS';
 sub BUILD {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 514, 0);
+    print $s pack('(LL)>', CLTOMA_CHUNKSTEST_INFO, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ( $cmd == 515 and $length == 52 or $length == 76 ) {
+    if ( $cmd == MATOCL_CHUNKSTEST_INFO and $length == 52 or $length == 76 ) {
         my $data = $self->myrecv($s, $length);
         my $d = substr($data, 0, 52);
         my ($loopstart, $loopend, $del_invalid, $ndel_invalid, $del_unused, $ndel_unused, $del_dclean, $ndel_dclean, $del_ogoal, $ndel_ogoal, $rep_ugoal, $nrep_ugoal, $rebalance) = unpack('(LLLLLLLLLLLLL)>', $d);

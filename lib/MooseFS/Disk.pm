@@ -2,6 +2,7 @@ package MooseFS::Disk;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS::Server';
@@ -26,10 +27,10 @@ sub BUILD {
             PeerPort => $port,
             Proto => 'tcp',
         );
-        print $ns pack('(LL)>', 600, 0);
+        print $ns pack('(LL)>', CLTOCS_HDD_LIST_V2, 0);
         my $nheader = $self->myrecv($ns, 8);
         my ($ncmd, $nlength) = unpack('(LL)>', $nheader);
-        if ( $ncmd == 601 ) {
+        if ( $ncmd == CSTOCL_HDD_LIST_V2 ) {
             my $data = $self->myrecv($ns, $nlength);
             while ( $nlength > 0 ) {
                 my ($entrysize) = unpack("S>", substr($data, 0, 2));

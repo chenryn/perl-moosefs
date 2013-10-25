@@ -2,6 +2,7 @@ package MooseFS::Matrix;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -13,23 +14,18 @@ has info => (
  
 sub BUILD {
     my $self = shift;
+    my $ver = $self->masterversion;
     my $s = $self->sock;
-    print $s pack('(LL)>', 510, 0);
-    my $header = $self->myrecv($s, 8);
-    my ($cmd, $length) = unpack('(LL)>', $header);
-    my $data = $self->myrecv($s, $length);
-    my ($v1, $v2, $v3, $memusage, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack('(SCCQQQQLQLLLLLLL)>', $data);
-    
-    if ($v2 > 5 and $v3 > 9) {
-        print $s pack('(LLS)>', 516, 1, 0);
-    } elsif ($v2 > 4 and $v3 > 12) {
-        print $s pack('(LL)>', 516, 0);
+    if ($ver > 1509) {
+        print $s pack('(LLS)>', CLTOMA_CHUNKS_MATRIX, 1, 0);
+    } elsif ($ver > 1412) {
+        print $s pack('(LL)>', CLTOMA_CHUNKS_MATRIX, 0);
     } else {
         die 'Too old version';
     };
     my $nheader = $self->myrecv($s, 8);
     my ($ncmd, $nlength) = unpack('(LL)>', $nheader);
-    if ($ncmd == 517 and $nlength == 484) {
+    if ($ncmd == MATOCL_CHUNKS_MATRIX and $nlength == 484) {
         for my $i ( 0 .. 10 ) {
             my $ndata = $self->myrecv($s, 44);
             push @{ $self->info }, [ unpack("(LLLLLLLLLLL)>", $ndata) ];

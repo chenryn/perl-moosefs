@@ -2,6 +2,7 @@ package MooseFS::Operations;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -16,10 +17,10 @@ sub BUILD {
     my $ver = $self->masterversion;
     my $s = $self->sock;
 
-    print $s pack('(LL)>', 508, 0);
+    print $s pack('(LL)>', CLTOMA_SESSION_LIST, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ( $cmd == 509 and $ver > 1514 ) {
+    if ( $cmd == MATOCL_SESSION_LIST and $ver > 1514 ) {
         my $data = $self->myrecv($s, $length);
         my ($startcnt, $pos);
 

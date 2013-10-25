@@ -2,6 +2,7 @@ package MooseFS::CheckInfo;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -9,10 +10,10 @@ extends 'MooseFS';
 sub BUILD {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 512, 0);
+    print $s pack('(LL)>', CLTOMA_FSTEST_INFO, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ( $cmd == 513 and $length >= 36 ) {
+    if ( $cmd == MATOCL_FSTEST_INFO and $length >= 36 ) {
         my $data = $self->myrecv($s, $length);
         my $d = substr($data, 0, 36);
         my ($loopstart, $loopend, $files, $ugfiles, $mfiles, $chunks, $ugchunks, $mchunks, $msgbuffleng) = unpack('(LLLLLLLLL)>', $d);

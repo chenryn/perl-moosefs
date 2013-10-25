@@ -2,6 +2,7 @@ package MooseFS::Info;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -9,10 +10,10 @@ extends 'MooseFS';
 sub BUILD {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 510, 0); 
+    print $s pack('(LL)>', CLTOMA_INFO, 0); 
     my $header = $self->myrecv($s, 8); 
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ($cmd == 511 and $length == 52) {
+    if ($cmd == MATOCL_INFO and $length == 52) {
         my $data = $self->myrecv($s, $length);
         my ($total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $chunks, $tdcopies) = unpack("(QQQLQLLLL)>", $data);
         $self->info({
@@ -26,7 +27,7 @@ sub BUILD {
             chunks => $chunks,
             regular_chunk_copies => $tdcopies,
         });
-    } elsif ($cmd == 511 and $length == 60) {
+    } elsif ($cmd == MATOCL_INFO and $length == 60) {
         my $data = $self->myrecv($s, $length);
         my ($total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $tdcopies) = unpack("(QQQLQLLLLLL)>", $data);
         $self->info({
@@ -42,7 +43,7 @@ sub BUILD {
             chunks => $chunks,
             regular_chunk_copies => $tdcopies,
         });
-    } elsif ($cmd == 511 and $length == 68) {
+    } elsif ($cmd == MATOCL_INFO and $length == 68) {
         my $data = $self->myrecv($s, $length);
         my ($v1, $v2, $v3, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack("(SCCQQQLQLLLLLLL)>", $data);
         $self->info({
@@ -60,7 +61,7 @@ sub BUILD {
             all_chunk_copies => $allcopies,
             regular_chunk_copies => $tdcopies,
         });
-    } elsif ($cmd == 511 and $length == 76) {
+    } elsif ($cmd == MATOCL_INFO and $length == 76) {
         my $data = $self->myrecv($s, $length);
         my ($v1, $v2, $v3, $memusage, $total, $avail, $trspace, $trfiles, $respace, $refiles, $nodes, $dirs, $files, $chunks, $allcopies, $tdcopies) = unpack('(SCCQQQQLQLLLLLLL)>', $data); 
         $self->info({

@@ -5,6 +5,7 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 use IO::Socket::INET;
+use MooseFS::Communication;
 
 =head1 NAME
 
@@ -79,11 +80,11 @@ sub _create_sock {
 sub _check_version {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 510, 0);
+    print $s pack('(LL)>', CLTOMA_INFO, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
     my $data = $self->myrecv($s, $length);
-    if ( $cmd == 511 ) {
+    if ( $cmd == MATOCL_INFO ) {
         if ( $length == 52 ) {
             return 1400;
         } elsif ( $length == 60 ) {

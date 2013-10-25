@@ -2,6 +2,7 @@ package MooseFS::Exports;
 use strict;
 use warnings;
 use IO::Socket::INET;
+use MooseFS::Communication;
 use Moo;
 
 extends 'MooseFS';
@@ -14,10 +15,10 @@ has list => (
 sub BUILD {
     my $self = shift;
     my $s = $self->sock;
-    print $s pack('(LL)>', 520, 0);
+    print $s pack('(LL)>', CLTOMA_EXPORTS_INFO, 0);
     my $header = $self->myrecv($s, 8);
     my ($cmd, $length) = unpack('(LL)>', $header);
-    if ( $cmd == 521 ) {
+    if ( $cmd == MATOCL_EXPORTS_INFO ) {
         my $data = $self->myrecv($s, $length);
         my $pos = 0;
         while ( $pos < $length ) {
